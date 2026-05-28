@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SEMA Health Check · 건강 자가진단</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+  <style>
+    /* ============================================================
+       1. 디자인 토큰 — 클리닉 톤
+       ============================================================ */
+    :root {
+      --bg:         #f4f8fb;        /* 매우 연한 블루-그레이 */
+      --surface:    #ffffff;
+      --surface-2:  #f0f6fb;
+      --border:     #e4eef5;
+      --border-2:   #d0e0eb;
+
+      --ink:        #0b2942;        /* 딥 네이비 */
+      --ink-soft:   #4a6680;
+      --ink-mute:   #8aa3b8;
+
+      --mint:       #4dc9b0;        /* 메인 액센트: 신뢰감 민트 */
+      --mint-soft:  #e7f7f3;
+      --mint-deep:  #2ea58a;
+
+      --blue:       #4a8fd0;        /* 보조 액센트 */
+      --blue-soft:  #e8f1fa;
+
+      --safe:    #2ea58a;
+      --safe-bg: #e7f7f3;
+      --mild:    #d4a017;
+      --mild-bg: #fdf6e3;
+      --warn:    #e08a3c;
+      --warn-bg: #fef3e7;
+      --danger:  #d65454;
+      --danger-bg: #fdecec;
+
+      --sans:    'Pretendard', 'Plus Jakarta Sans', -apple-system, sans-serif;
+      --display: 'Plus Jakarta Sans', 'Pretendard', sans-serif;
+      --mono:    'JetBrains Mono', monospace;
+
+      --radius-sm: 10px;
+      --radius:    16px;
+      --radius-lg: 24px;
+      --radius-xl: 32px;
+
+      --shadow-sm: 0 1px 2px rgba(11, 41, 66, 0.04), 0 2px 4px rgba(11, 41, 66, 0.03);
+      --shadow:    0 2px 8px rgba(11, 41, 66, 0.06), 0 8px 24px rgba(11, 41, 66, 0.05);
+      --shadow-lg: 0 8px 16px rgba(11, 41, 66, 0.08), 0 24px 48px rgba(11, 41, 66, 0.08);
+    }
+
+    /* ============================================================
+       2. 베이스
+       ============================================================ */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--sans);
+      color: var(--ink);
+      background: var(--bg);
+      min-height: 100vh;
+      line-height: 1.55;
+      letter-spacing: -0.01em;
+      -webkit-font-smoothing: antialiased;
+      font-feature-settings: 'ss01', 'ss02';
+    }
+
+    /* 부드러운 배경 그라데이션 */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at top, rgba(77, 201, 176, 0.06) 0%, transparent 60%),
+        radial-gradient(ellipse at bottom right, rgba(74, 143, 208, 0.04) 0%, transparent 50%);
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 32px 24px 80px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ============================================================
+       3. 헤더 — 브랜드 바
+       ============================================================ */
+    .nav {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--mint) 0%, var(--mint-deep) 100%);
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      position: relative;
+      box-shadow: 0 2px 6px rgba(46, 165, 138, 0.3);
+    }
+
+    /* 십자가 마크 */
+    .brand-logo::before, .brand-logo::after {
+      content: '';
+      position: absolute;
+      background: #fff;
+      border-radius: 1.5px;
+    }
+    .brand-logo::before { width: 14px; height: 3px; }
+    .brand-logo::after  { width: 3px; height: 14px; }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+
+    .brand-name {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-sub {
+      font-size: 11px;
+      color: var(--ink-mute);
+      margin-top: 2px;
+    }
+
+    .nav-meta {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--ink-mute);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-meta .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--mint);
+      box-shadow: 0 0 0 4px rgba(77, 201, 176, 0.2);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 4px rgba(77, 201, 176, 0.2); }
+      50%      { box-shadow: 0 0 0 8px rgba(77, 201, 176, 0.05); }
+    }
+
+    /* ============================================================
+       4. 히어로
+       ============================================================ */
+    .hero {
+      background: var(--surface);
+      border-radius: var(--radius-xl);
+      padding: 48px 44px;
+      margin-bottom: 28px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      right: -60px; top: -60px;
+      width: 240px; height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--mint-soft) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--mint-soft);
+      color: var(--mint-deep);
+      padding: 6px 14px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .hero-tag::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: var(--mint-deep);
+      border-radius: 50%;
+    }
+
+    h1 {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: clamp(28px, 4vw, 40px);
+      line-height: 1.15;
+      letter-spacing: -0.025em;
+      color: var(--ink);
+      margin-bottom: 14px;
+      position: relative;
+    }
+
+    .hero-desc {
+      font-size: 15px;
+      color: var(--ink-soft);
+      max-width: 540px;
+      line-height: 1.65;
+      position: relative;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 32px;
+      margin-top: 28px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      position: relative;
+    }
+
+    .stat-item .stat-num {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 22px;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+    }
+
+    .stat-item .stat-label {
+      font-size: 11px;
+      color: var(--ink-mute);
+      margin-top: 2px;
+      font-weight: 500;
+    }
+
+    /* ============================================================
+       5. 카드 공통
+       ============================================================ */
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+    }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+    }
+
+    .card-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .card-icon {
+      width: 36px; height: 36px;
+      background: var(--mint-soft);
+      color: var(--mint-deep);
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    .card-icon svg { width: 18px; height: 18px; }
+
+    .card-title {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 17px;
+      letter-spacing: -0.015em;
+    }
+
+    .card-sub {
+      font-size: 12px;
+      color: var(--ink-mute);
+      margin-top: 2px;
+    }
+
+    .card-badge {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--ink-mute);
+      background: var(--bg);
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    /* ============================================================
+       6. 증상 그리드
+       ============================================================ */
+    .symptom-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 14px;
+    }
+
+    .symptom-card {
+      background: var(--bg);
+      border: 1.5px solid transparent;
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      transition: all 0.2s ease;
+    }
+
+    .symptom-card.has-value {
+      background: var(--surface);
+      border-color: var(--mint);
+      box-shadow: 0 0 0 4px rgba(77, 201, 176, 0.08);
+    }
+
+    .symptom-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .symptom-name {
+      font-weight: 600;
+      font-size: 14.5px;
+      color: var(--ink);
+    }
+
+    .symptom-weight {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--ink-mute);
+      background: var(--surface);
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+
+    .symptom-card.has-value .symptom-weight {
+      background: var(--mint-soft);
+      color: var(--mint-deep);
+      border-color: transparent;
+    }
+
+    .level-options {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      background: var(--surface);
+      padding: 3px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .symptom-card.has-value .level-options {
+      background: var(--bg);
+    }
+
+    .level-btn {
+      background: transparent;
+      border: none;
+      padding: 8px 4px;
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-mute);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      border-radius: 7px;
+    }
+
+    .level-btn:hover { color: var(--ink); }
+
+    .level-btn.active {
+      background: var(--mint);
+      color: white;
+      box-shadow: 0 1px 3px rgba(46, 165, 138, 0.4);
+    }
+
+    /* ============================================================
+       7. 상황 정보 (number stepper)
+       ============================================================ */
+    .context-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .ctx-field {
+      background: var(--bg);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      border: 1px solid transparent;
+    }
+
+    .ctx-field label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 2px;
+    }
+
+    .ctx-field .hint {
+      font-size: 12px;
+      color: var(--ink-mute);
+      margin-bottom: 16px;
+    }
+
+    .stepper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 6px;
+      border: 1px solid var(--border);
+    }
+
+    .num-btn {
+      width: 34px; height: 34px;
+      background: var(--bg);
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      color: var(--ink);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-weight: 500;
+      display: grid;
+      place-items: center;
+    }
+
+    .num-btn:hover {
+      background: var(--mint);
+      color: white;
+      transform: scale(1.05);
+    }
+
+    .num-display {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .num-value {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 22px;
+      color: var(--ink);
+      min-width: 32px;
+      text-align: center;
+    }
+
+    .num-unit {
+      font-size: 13px;
+      color: var(--ink-mute);
+      font-weight: 500;
+    }
+
+    /* ============================================================
+       8. 분석 버튼
+       ============================================================ */
+    .submit-area {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .reset-btn {
+      background: transparent;
+      border: none;
+      color: var(--ink-mute);
+      font-size: 13px;
+      cursor: pointer;
+      font-weight: 500;
+      padding: 12px 16px;
+      border-radius: 10px;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .reset-btn:hover { color: var(--ink); background: var(--bg); }
+
+    .analyze-btn {
+      background: linear-gradient(135deg, var(--mint) 0%, var(--mint-deep) 100%);
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      border-radius: 12px;
+      letter-spacing: -0.01em;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(46, 165, 138, 0.3), 0 1px 3px rgba(46, 165, 138, 0.2);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .analyze-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(46, 165, 138, 0.4), 0 2px 6px rgba(46, 165, 138, 0.3);
+    }
+
+    .analyze-btn:active { transform: translateY(0); }
+
+    .analyze-btn svg { width: 16px; height: 16px; }
+
+    /* ============================================================
+       9. 결과 패널
+       ============================================================ */
+    .result {
+      display: none;
+      animation: slideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+      margin-top: 28px;
+    }
+
+    .result.show { display: block; }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 결과 메인 카드 */
+    .result-main {
+      background: var(--surface);
+      border-radius: var(--radius-xl);
+      padding: 40px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .result-main::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 6px;
+      background: var(--grade-color);
+    }
+
+    .result-row {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 32px;
+      align-items: center;
+    }
+
+    /* 신호등 배지 */
+    .traffic-light {
+      width: 140px; height: 140px;
+      background: var(--grade-bg);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .traffic-light::before {
+      content: '';
+      position: absolute;
+      inset: 12px;
+      border-radius: 50%;
+      background: var(--grade-color);
+      box-shadow:
+        inset 0 -8px 16px rgba(0, 0, 0, 0.15),
+        0 4px 12px var(--grade-color),
+        0 0 0 6px rgba(255, 255, 255, 0.6);
+      animation: glow 2s ease-in-out infinite;
+    }
+
+    @keyframes glow {
+      0%, 100% { box-shadow: inset 0 -8px 16px rgba(0,0,0,0.15), 0 4px 12px var(--grade-color), 0 0 0 6px rgba(255,255,255,0.6); }
+      50%      { box-shadow: inset 0 -8px 16px rgba(0,0,0,0.15), 0 4px 20px var(--grade-color), 0 0 0 6px rgba(255,255,255,0.6); }
+    }
+
+    .traffic-light-icon {
+      position: relative;
+      z-index: 1;
+      color: white;
+      font-size: 38px;
+      font-weight: 800;
+      font-family: var(--display);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .result-info .label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ink-mute);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .result-info .grade-name {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: 38px;
+      color: var(--grade-color);
+      letter-spacing: -0.025em;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .result-info .score-detail {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--ink-mute);
+      background: var(--bg);
+      padding: 8px 14px;
+      border-radius: 8px;
+      display: inline-block;
+    }
+
+    /* 안내 메시지 박스 */
+    .advisory {
+      background: var(--grade-bg);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-top: 28px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .advisory-icon {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--grade-color);
+      color: white;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .advisory-text {
+      font-size: 14.5px;
+      color: var(--ink);
+      line-height: 1.6;
+    }
+
+    /* 기여도 차트 */
+    .chart-card { padding: 28px 32px 32px; }
+
+    .bar-list { display: flex; flex-direction: column; gap: 12px; }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 120px 1fr 50px;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .bar-name {
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    .bar-track {
+      height: 10px;
+      background: var(--bg);
+      border-radius: 99px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 0;
+      border-radius: 99px;
+      background: var(--grade-color);
+      transition: width 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .bar-value {
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink);
+      text-align: right;
+    }
+
+    .empty-bars {
+      color: var(--ink-mute);
+      font-size: 13px;
+      text-align: center;
+      padding: 16px 0;
+    }
+
+    /* Red Flag 항목 */
+    .flag-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px;
+      background: #fdecec;
+      border-left: 3px solid #d65454;
+      border-radius: 10px;
+      font-size: 14px;
+      color: var(--ink);
+      line-height: 1.5;
+    }
+
+    .flag-icon {
+      width: 22px; height: 22px;
+      background: #d65454;
+      color: white;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* 질환 매칭 행 */
+    .disease-row {
+      display: grid;
+      grid-template-columns: 1fr 50px;
+      gap: 14px;
+      align-items: center;
+      padding: 4px 0;
+    }
+
+    .disease-info {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .disease-name-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .disease-name {
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .disease-rank {
+      font-family: var(--mono);
+      font-size: 10px;
+      background: var(--bg);
+      color: var(--ink-mute);
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-weight: 600;
+    }
+
+    .disease-rank.top {
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+
+    .disease-bar-track {
+      height: 8px;
+      background: var(--bg);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .disease-bar-fill {
+      height: 100%;
+      width: 0;
+      background: var(--blue);
+      border-radius: 99px;
+      transition: width 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .disease-bar-fill.top { background: linear-gradient(90deg, var(--mint) 0%, var(--blue) 100%); }
+
+    .disease-percent {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+      text-align: right;
+    }
+
+    .pattern-summary {
+      margin-bottom: 18px;
+      padding: 14px 16px;
+      background: var(--blue-soft);
+      border-radius: 10px;
+      font-size: 13px;
+      color: var(--ink);
+      line-height: 1.6;
+    }
+
+    .pattern-summary strong { color: var(--blue); font-weight: 700; }
+
+    /* AI 안내 카드 */
+    .ai-card {
+      background: linear-gradient(135deg, var(--blue-soft) 0%, var(--mint-soft) 100%);
+      border-radius: var(--radius-lg);
+      padding: 28px 32px;
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ai-card::before {
+      content: '';
+      position: absolute;
+      right: -40px; top: -40px;
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(74, 143, 208, 0.15) 0%, transparent 70%);
+    }
+
+    .ai-card-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      position: relative;
+    }
+
+    .ai-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface);
+      color: var(--blue);
+      padding: 5px 12px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .ai-badge::before {
+      content: '✦';
+      color: var(--blue);
+    }
+
+    .ai-title {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 19px;
+      color: var(--ink);
+      margin-bottom: 8px;
+      position: relative;
+    }
+
+    .ai-body {
+      font-size: 14.5px;
+      color: var(--ink-soft);
+      line-height: 1.7;
+      position: relative;
+    }
+
+    /* ============================================================
+       10. 푸터
+       ============================================================ */
+    footer {
+      margin-top: 48px;
+      padding: 24px;
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--ink-mute);
+    }
+
+    footer .members { font-weight: 500; color: var(--ink-soft); }
+
+    .disclaimer {
+      font-size: 11.5px;
+      color: var(--ink-mute);
+      text-align: center;
+      margin-top: 16px;
+      line-height: 1.6;
+      padding: 0 24px;
+    }
+
+    /* ============================================================
+       11. 반응형
+       ============================================================ */
+    @media (max-width: 640px) {
+      .container { padding: 20px 16px 60px; }
+      .hero { padding: 32px 24px; border-radius: var(--radius-lg); }
+      .card { padding: 24px 20px; }
+      .hero-stats { flex-wrap: wrap; gap: 20px; }
+      .context-row { grid-template-columns: 1fr; }
+      .submit-area { flex-direction: column-reverse; }
+      .analyze-btn, .reset-btn { width: 100%; justify-content: center; }
+      .result-main { padding: 28px 22px; }
+      .result-row { grid-template-columns: 1fr; gap: 24px; text-align: center; }
+      .traffic-light { width: 110px; height: 110px; margin: 0 auto; }
+      .traffic-light-icon { font-size: 30px; }
+      .result-info .grade-name { font-size: 32px; }
+      .advisory { flex-direction: column; gap: 8px; text-align: left; }
+      .bar-row { grid-template-columns: 90px 1fr 44px; gap: 10px; }
+      .chart-card { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- 네비게이션 바 -->
+    <div class="nav">
+      <div class="brand">
+        <div class="brand-logo"></div>
+        <div class="brand-text">
+          <div class="brand-name">SEMA Health Check</div>
+          <div class="brand-sub">학생 건강 자가진단 시스템</div>
+        </div>
+      </div>
+      <div class="nav-meta">
+        <span class="dot"></span>
+        <span>SERVICE ACTIVE</span>
+      </div>
+    </div>
+
+    <!-- 히어로 -->
+    <div class="hero">
+      <div class="hero-tag">교내 감염병 예방 프로젝트</div>
+      <h1>지금 내 몸 상태,<br />빅데이터로 진단해드려요.</h1>
+      <p class="hero-desc">
+        증상을 입력하면 AI 알고리즘이 교내 감염병 위험도를 분석해
+        맞춤 예방 안내를 제공합니다. 가벼운 마음으로 1분 안에 체크해보세요.
+      </p>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-num">8</div>
+          <div class="stat-label">증상 항목</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">4</div>
+          <div class="stat-label">위험도 등급</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">~ 1분</div>
+          <div class="stat-label">소요 시간</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">익명</div>
+          <div class="stat-label">개인정보 미수집</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 섹션 1: 증상 입력 -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title-wrap">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+            </svg>
+          </div>
+          <div>
+            <div class="card-title">증상 체크</div>
+            <div class="card-sub">현재 느끼는 증상을 모두 선택해주세요</div>
+          </div>
+        </div>
+        <span class="card-badge">STEP 01</span>
+      </div>
+      <div class="symptom-grid" id="symptomGrid"></div>
+    </div>
+
+    <!-- 섹션 2: 상황 정보 -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title-wrap">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div>
+            <div class="card-title">상황 정보</div>
+            <div class="card-sub">맥락 정보를 함께 알려주세요</div>
+          </div>
+        </div>
+        <span class="card-badge">STEP 02</span>
+      </div>
+
+      <div class="context-row">
+        <div class="ctx-field">
+          <label>증상 지속일수</label>
+          <div class="hint">며칠째 증상이 있었나요?</div>
+          <div class="stepper">
+            <button class="num-btn" data-target="duration" data-delta="-1">−</button>
+            <div class="num-display">
+              <span class="num-value" id="durationVal">1</span>
+              <span class="num-unit">일</span>
+            </div>
+            <button class="num-btn" data-target="duration" data-delta="1">＋</button>
+          </div>
+        </div>
+        <div class="ctx-field">
+          <label>같은 반 유증상자</label>
+          <div class="hint">반에 비슷한 증상 친구가 몇 명?</div>
+          <div class="stepper">
+            <button class="num-btn" data-target="classmates" data-delta="-1">−</button>
+            <div class="num-display">
+              <span class="num-value" id="classmatesVal">0</span>
+              <span class="num-unit">명</span>
+            </div>
+            <button class="num-btn" data-target="classmates" data-delta="1">＋</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 28px;"></div>
+      <div class="submit-area">
+        <button class="reset-btn" id="resetBtn">↺ 처음부터</button>
+        <button class="analyze-btn" id="analyzeBtn">
+          위험도 분석하기
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- 결과 영역 -->
+    <div class="result" id="result">
+
+      <!-- 메인 결과 -->
+      <div class="result-main" id="resultMain">
+        <div class="result-row">
+          <div class="traffic-light">
+            <div class="traffic-light-icon" id="gradeMark"></div>
+          </div>
+          <div class="result-info">
+            <div class="label">YOUR RISK LEVEL</div>
+            <div class="grade-name" id="gradeName"></div>
+            <div class="score-detail" id="gradeScore"></div>
+          </div>
+        </div>
+        <div class="advisory">
+          <div class="advisory-icon">i</div>
+          <div class="advisory-text" id="gradeMessage"></div>
+        </div>
+      </div>
+
+      <!-- Red Flag (의학적 위험 신호) -->
+      <div class="card chart-card" id="redFlagCard" style="display:none;">
+        <div class="card-head">
+          <div class="card-title-wrap">
+            <div class="card-icon" style="background:#fdecec;color:#d65454;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+            </div>
+            <div>
+              <div class="card-title">의학적 위험 신호 <span style="font-size:11px;background:#fdecec;color:#d65454;padding:2px 8px;border-radius:6px;margin-left:6px;font-weight:600;">RED FLAG</span></div>
+              <div class="card-sub">단독으로도 주의가 필요한 임상 결정 규칙(CDR) 적용 결과</div>
+            </div>
+          </div>
+        </div>
+        <div id="redFlags" style="display:flex;flex-direction:column;gap:10px;"></div>
+      </div>
+
+      <!-- 패턴 매칭 (감염병 추정) -->
+      <div class="card chart-card" id="patternCard" style="display:none;">
+        <div class="card-head">
+          <div class="card-title-wrap">
+            <div class="card-icon" style="background:var(--blue-soft);color:var(--blue);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+            </div>
+            <div>
+              <div class="card-title">감염병 패턴 매칭 <span style="font-size:11px;background:var(--blue-soft);color:var(--blue);padding:2px 8px;border-radius:6px;margin-left:6px;font-weight:600;">COSINE SIM.</span></div>
+              <div class="card-sub">증상 프로파일과의 유사도를 계산해 추정 질환을 제시합니다</div>
+            </div>
+          </div>
+        </div>
+        <div class="bar-list" id="diseaseMatches"></div>
+      </div>
+
+      <!-- 기여도 차트 -->
+      <div class="card chart-card">
+        <div class="card-head">
+          <div class="card-title-wrap">
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="20" x2="18" y2="10"/>
+                <line x1="12" y1="20" x2="12" y2="4"/>
+                <line x1="6" y1="20" x2="6" y2="14"/>
+              </svg>
+            </div>
+            <div>
+              <div class="card-title">증상별 기여도</div>
+              <div class="card-sub">어떤 증상이 점수에 영향을 줬는지 분석합니다</div>
+            </div>
+          </div>
+        </div>
+        <div class="bar-list" id="bars"></div>
+      </div>
+
+      <!-- AI 안내 -->
+      <div class="ai-card">
+        <div class="ai-card-head">
+          <span class="ai-badge">AI ADVISORY</span>
+        </div>
+        <h3 class="ai-title" id="aiTipTitle"></h3>
+        <p class="ai-body" id="aiTipBody"></p>
+      </div>
+    </div>
+
+    <!-- 푸터 -->
+    <footer>
+      <span>© 2026 세마고등학교 학생주도프로젝트</span>
+      <span class="members">원태현 · 김영현 · 박성찬 · 김범수 · 정준</span>
+    </footer>
+
+    <p class="disclaimer">
+      ※ 본 시스템은 학생주도프로젝트의 일환으로 제작된 자가진단 도구이며,
+      의학적 진단을 대체하지 않습니다. 정확한 진단은 의료기관을 통해 받아주세요.
+    </p>
+  </div>
+
+  <script>
+  /* ==============================================================
+     알고리즘 v2.0 (infection_risk_analyzer.py 와 동일 로직)
+
+       [1단] 기본 점수    : 증상 × 가중치 합산
+       [2단] Red Flag    : 의학적 위험 신호 우선 적용
+       [3단] 패턴 매칭    : 코사인 유사도로 감염병 추정
+       [4단] AI 안내      : 위 결과 종합한 동적 메시지
+     ============================================================== */
+
+  const SYMPTOMS = [
+    { code: 'fever',       label: '발열',           weight: 3.0 },
+    { code: 'cough',       label: '기침',           weight: 2.0 },
+    { code: 'sore_throat', label: '인후통',         weight: 1.5 },
+    { code: 'runny_nose',  label: '콧물·코막힘',    weight: 1.0 },
+    { code: 'headache',    label: '두통',           weight: 1.5 },
+    { code: 'body_ache',   label: '근육통·관절통',  weight: 2.0 },
+    { code: 'fatigue',     label: '피로·무기력',    weight: 1.5 },
+    { code: 'diarrhea',    label: '설사·복통',      weight: 2.0 },
+  ];
+
+  const LEVEL_NAMES = ['없음', '약함', '보통', '심함'];
+
+  /* 등급: 0=낮음 1=보통 2=높음 3=매우 높음 */
+  const GRADES = [
+    { level: 0, name: '낮음',     color: '#2ea58a', bg: '#e7f7f3', mark: '✓' },
+    { level: 1, name: '보통',     color: '#d4a017', bg: '#fdf6e3', mark: '◆' },
+    { level: 2, name: '높음',     color: '#e08a3c', bg: '#fef3e7', mark: '▲' },
+    { level: 3, name: '매우 높음', color: '#d65454', bg: '#fdecec', mark: '!' },
+  ];
+
+  const MESSAGES = {
+    '낮음':     '현재 특별한 위험 신호는 없어요. 평소처럼 마스크 착용·손씻기·실내 환기 같은 예방 수칙을 잘 유지해주세요.',
+    '보통':     '가벼운 증상이 있어요. 마스크 착용과 충분한 수분 섭취를 권장합니다. 증상이 더 심해지면 보건실을 방문해주세요.',
+    '높음':     '감염병 가능성이 있어요. 보건실 방문을 권장하며, 다른 학생과 거리를 두고 마스크를 꼭 착용해주세요.',
+    '매우 높음': '즉시 보건실 또는 병원 방문이 필요합니다. 등교 자제를 고려하고 보호자에게 알려주세요.',
+  };
+
+  /* 감염병 프로파일 (3단 패턴 매칭용) */
+  const DISEASE_PROFILES = {
+    '독감(인플루엔자)':  { fever:3.0, cough:2.0, sore_throat:1.5, runny_nose:1.0, headache:2.0, body_ache:3.0, fatigue:3.0, diarrhea:0.5 },
+    '코로나19':         { fever:2.5, cough:2.5, sore_throat:2.0, runny_nose:1.5, headache:2.0, body_ache:2.0, fatigue:2.5, diarrhea:1.0 },
+    '일반 감기':         { fever:0.5, cough:2.0, sore_throat:2.5, runny_nose:3.0, headache:1.5, body_ache:0.5, fatigue:1.0, diarrhea:0.0 },
+    '위장염(노로·로타)': { fever:1.0, cough:0.0, sore_throat:0.0, runny_nose:0.0, headache:1.0, body_ache:0.5, fatigue:2.0, diarrhea:3.0 },
+    '알레르기·비염':     { fever:0.0, cough:1.0, sore_throat:1.5, runny_nose:3.0, headache:1.0, body_ache:0.0, fatigue:0.5, diarrhea:0.0 },
+    '인후염·편도염':     { fever:2.0, cough:1.0, sore_throat:3.0, runny_nose:0.5, headache:1.5, body_ache:1.0, fatigue:1.5, diarrhea:0.0 },
+  };
+
+  /* 질환별 맞춤 안내 본문 */
+  const DISEASE_ADVICE = {
+    '독감(인플루엔자)':
+      '고열·근육통·피로가 두드러지는 패턴이에요. 인플루엔자는 항바이러스제가 발병 48시간 내 복용 시 가장 효과적이니, 빠른 병원 진료를 권장합니다. 기침 에티켓과 손씻기를 철저히 해주세요.',
+    '코로나19':
+      '발열·기침·피로 등 호흡기 감염병의 전형적 패턴이에요. KF94 마스크를 착용하고, 보건실에서 자가검사를 받아보세요. 검사 결과 양성이면 즉시 격리·등교 중지가 필요합니다.',
+    '일반 감기':
+      '콧물·인후통 중심의 가벼운 상기도 감염 패턴이에요. 충분한 수면과 수분 섭취로 보통 5~7일 내 회복됩니다. 다만 고열이 동반되거나 4일 이상 지속되면 병원 진료를 받으세요.',
+    '위장염(노로·로타)':
+      '설사·복통 중심의 위장관 감염 패턴이에요. 탈수가 가장 위험하니 미지근한 물·이온음료를 충분히 섭취하고, 손씻기를 평소보다 더 자주 해주세요. 음식을 다른 학생과 나누지 마세요.',
+    '알레르기·비염':
+      '콧물·재채기가 주 증상으로 알레르기성 비염 가능성이 있어요. 감염병보다는 환경 요인(꽃가루·먼지)일 수 있으니, 발열이 없다면 항히스타민제로 관리할 수 있습니다.',
+    '인후염·편도염':
+      '인후통이 특히 강한 패턴이에요. 따뜻한 물을 자주 마시고 자극적인 음식은 피해주세요. 고열이 동반되거나 음식 삼키기 어려우면 즉시 병원 진료를 받으세요.',
+  };
+
+  /* ============== 유틸 ============== */
+  function durationMultiplier(d) {
+    if (d <= 1) return 1.0;
+    if (d <= 3) return 1.2;
+    return 1.5;
+  }
+  function classmateBonus(n) {
+    if (n === 0) return 0;
+    if (n <= 2)  return 2.0;
+    return 4.0;
+  }
+  function scoreToGradeLevel(score) {
+    if (score >= 31) return 3;
+    if (score >= 18) return 2;
+    if (score >= 8)  return 1;
+    return 0;
+  }
+  function cosineSimilarity(a, b) {
+    let dot = 0, na = 0, nb = 0;
+    for (let i = 0; i < a.length; i++) {
+      dot += a[i] * b[i];
+      na  += a[i] * a[i];
+      nb  += b[i] * b[i];
+    }
+    if (na === 0 || nb === 0) return 0;
+    return dot / (Math.sqrt(na) * Math.sqrt(nb));
+  }
+
+  /* ============== 1단: 기본 점수 ============== */
+  function calcBaseScore(symptoms) {
+    let base = 0;
+    const contribs = [];
+    for (const s of SYMPTOMS) {
+      const level = Math.max(0, Math.min(3, symptoms[s.code] || 0));
+      const c = s.weight * level;
+      base += c;
+      if (c > 0) contribs.push({ name: s.label, score: c });
+    }
+    contribs.sort((a, b) => b.score - a.score);
+    return { base, contribs };
+  }
+
+  /* ============== 2단: Red Flag ============== */
+  function applyRedFlags(symptoms, duration, classmates, gradeLevel) {
+    const flags = [];
+    let level = gradeLevel;
+
+    const fever     = symptoms.fever     || 0;
+    const diarrhea  = symptoms.diarrhea  || 0;
+    const activeCount = SYMPTOMS.filter(s => (symptoms[s.code] || 0) >= 2).length;
+
+    // Rule 1: 고열 단독 vs 동반
+    if (fever >= 3) {
+      const otherStrong = SYMPTOMS.filter(
+        s => s.code !== 'fever' && (symptoms[s.code] || 0) >= 2
+      ).length;
+      if (otherStrong >= 1) {
+        level = Math.max(level, 3);
+        flags.push('고열 + 다른 강한 증상 동반 (감염병 강하게 의심)');
+      } else {
+        level = Math.max(level, 2);
+        flags.push('고열 단독 발현 (발열성 질환 의심)');
+      }
+    }
+    // Rule 2: 발열 보통 이상 + 3일 이상
+    else if (fever >= 2 && duration >= 3) {
+      level = Math.max(level, 2);
+      flags.push('발열 3일 이상 지속 (조기 진료 필요)');
+    }
+
+    // Rule 3: 심한 설사 + 2일 이상
+    if (diarrhea >= 3 && duration >= 2) {
+      level = Math.max(level, 2);
+      flags.push('심한 설사 2일 이상 지속 (탈수 위험)');
+    }
+
+    // Rule 4: 동시 증상 5개 이상
+    if (activeCount >= 5) {
+      level = Math.max(level, 2);
+      flags.push(`동시 증상 ${activeCount}개 (복합 감염 의심)`);
+    }
+
+    // Rule 5: 5일 이상 장기 지속 + 증상 2개 이상
+    if (duration >= 5 && activeCount >= 2) {
+      level = Math.max(level, 2);
+      flags.push('증상 5일 이상 장기 지속');
+    }
+
+    // Rule 6: 같은 반 3명 이상 + 본인도 증상
+    if (classmates >= 3 && activeCount >= 1) {
+      level = Math.min(Math.max(level, Math.max(gradeLevel, 1) + 1), 3);
+      flags.push('같은 반 유증상자 3명 이상 (학급 집단감염 의심)');
+    }
+
+    return { level, flags };
+  }
+
+  /* ============== 3단: 패턴 매칭 ============== */
+  function matchDiseases(symptoms) {
+    const codes = SYMPTOMS.map(s => s.code);
+    const studentVec = codes.map(c => symptoms[c] || 0);
+    if (studentVec.every(v => v === 0)) return [];
+
+    const matches = [];
+    for (const [disease, profile] of Object.entries(DISEASE_PROFILES)) {
+      const diseaseVec = codes.map(c => profile[c]);
+      const sim = cosineSimilarity(studentVec, diseaseVec);
+      if (sim >= 0.30) {
+        matches.push({ disease, similarity: Math.round(sim * 1000) / 10 });
+      }
+    }
+    matches.sort((a, b) => b.similarity - a.similarity);
+    return matches.slice(0, 3);
+  }
+
+  /* ============== 4단: AI 안내 생성 ============== */
+  function generateAdvice(symptoms, matches, totalScore) {
+    const active = SYMPTOMS
+      .filter(s => (symptoms[s.code] || 0) >= 2)
+      .map(s => s.label);
+
+    if (totalScore < 4 && active.length === 0) {
+      return {
+        title: '특이 패턴 없음',
+        body:  '현재 입력된 증상으로는 특정 감염병을 의심하기 어려워요. 규칙적인 손씻기·실내 환기·충분한 수면으로 평소 면역력을 관리해주세요.',
+      };
+    }
+
+    if (matches.length > 0) {
+      const top = matches[0];
+      const confidence = top.similarity >= 75 ? '강함'
+                       : top.similarity >= 55 ? '보통' : '약함';
+      let body = DISEASE_ADVICE[top.disease] || '';
+      if (matches.length >= 2 && matches[1].similarity >= top.similarity - 10) {
+        body += ` 다만 '${matches[1].disease}' 가능성(${matches[1].similarity}%)도 함께 있어, 정확한 감별은 의료기관에서 받으시는 것이 좋아요.`;
+      }
+      return {
+        title: `${top.disease} 패턴 (유사도 ${top.similarity}% · 매칭 강도 ${confidence})`,
+        body,
+      };
+    }
+
+    if (active.length > 0) {
+      return {
+        title: `단일·비특이 증상 (${active.slice(0, 3).join(', ')})`,
+        body:  '특정 감염병 패턴과는 강한 매칭이 없지만 증상이 분명히 있어요. 하루 더 경과를 관찰하면서 증상 변화를 기록해주세요. 악화되면 즉시 보건실을 방문하세요.',
+      };
+    }
+    return {
+      title: '경미한 증상',
+      body:  '가벼운 증상이 있어요. 마스크 착용·수분 섭취·휴식으로 관리해주시고, 증상이 심해지면 보건실에 방문해주세요.',
+    };
+  }
+
+  /* ============== 통합 분석 ============== */
+  function analyzeRisk(symptoms, duration, classmates) {
+    const { base, contribs } = calcBaseScore(symptoms);
+    const mult  = durationMultiplier(duration);
+    const bonus = classmateBonus(classmates);
+    const total = base * mult + bonus;
+
+    const initialLevel = scoreToGradeLevel(total);
+    const { level: finalLevel, flags } =
+      applyRedFlags(symptoms, duration, classmates, initialLevel);
+
+    const matches = matchDiseases(symptoms);
+    const advice = generateAdvice(symptoms, matches, total);
+
+    return {
+      baseScore:   Math.round(base * 10) / 10,
+      total:       Math.round(total * 10) / 10,
+      multiplier:  mult,
+      bonus,
+      grade:       GRADES[finalLevel],
+      gradeLevel:  finalLevel,
+      initialLevel,
+      contributions: contribs,
+      redFlags:    flags,
+      matches,
+      advice,
+    };
+  }
+
+  /* ============== 상태 ============== */
+  const state = { symptoms: {}, duration: 1, classmates: 0 };
+
+  /* ============== UI 생성 ============== */
+  function buildSymptomCards() {
+    const grid = document.getElementById('symptomGrid');
+    grid.innerHTML = SYMPTOMS.map(s => `
+      <div class="symptom-card" data-code="${s.code}">
+        <div class="symptom-label">
+          <span class="symptom-name">${s.label}</span>
+          <span class="symptom-weight">가중치 ${s.weight.toFixed(1)}</span>
+        </div>
+        <div class="level-options">
+          ${LEVEL_NAMES.map((name, i) => `
+            <button class="level-btn ${i === 0 ? 'active' : ''}"
+                    data-code="${s.code}" data-level="${i}">${name}</button>
+          `).join('')}
+        </div>
+      </div>
+    `).join('');
+
+    grid.querySelectorAll('.level-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const code = btn.dataset.code;
+        const level = parseInt(btn.dataset.level);
+        state.symptoms[code] = level;
+        const card = btn.closest('.symptom-card');
+        card.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        if (level > 0) card.classList.add('has-value');
+        else           card.classList.remove('has-value');
+      });
+    });
+  }
+
+  function setupSteppers() {
+    document.querySelectorAll('.num-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.target;
+        const delta  = parseInt(btn.dataset.delta);
+        if (target === 'duration') {
+          state.duration = Math.max(1, Math.min(30, state.duration + delta));
+          document.getElementById('durationVal').textContent = state.duration;
+        } else if (target === 'classmates') {
+          state.classmates = Math.max(0, Math.min(30, state.classmates + delta));
+          document.getElementById('classmatesVal').textContent = state.classmates;
+        }
+      });
+    });
+  }
+
+  /* ============== 결과 렌더링 ============== */
+  function renderResult() {
+    const r = analyzeRisk(state.symptoms, state.duration, state.classmates);
+    const main = document.getElementById('resultMain');
+    main.style.setProperty('--grade-color', r.grade.color);
+    main.style.setProperty('--grade-bg',    r.grade.bg);
+
+    document.getElementById('gradeMark').textContent = r.grade.mark;
+    document.getElementById('gradeName').textContent = r.grade.name;
+    document.getElementById('gradeName').style.color = r.grade.color;
+
+    // 점수 상세: Red Flag로 등급이 올라갔는지 표시
+    let scoreDetail = `score ${r.total}점 = ${r.baseScore} × ${r.multiplier}x + ${r.bonus}`;
+    if (r.gradeLevel > r.initialLevel) {
+      scoreDetail += `  ·  Red Flag로 등급 상향`;
+    }
+    document.getElementById('gradeScore').textContent = scoreDetail;
+    document.getElementById('gradeMessage').textContent = MESSAGES[r.grade.name];
+    main.querySelector('.advisory').style.background = r.grade.bg;
+    main.querySelector('.advisory-icon').style.background = r.grade.color;
+
+    /* === Red Flag 카드 === */
+    const redFlagCard = document.getElementById('redFlagCard');
+    const redFlags    = document.getElementById('redFlags');
+    if (r.redFlags.length > 0) {
+      redFlagCard.style.display = '';
+      redFlags.innerHTML = r.redFlags.map(f => `
+        <div class="flag-item">
+          <div class="flag-icon">!</div>
+          <div>${f}</div>
+        </div>
+      `).join('');
+    } else {
+      redFlagCard.style.display = 'none';
+    }
+
+    /* === 패턴 매칭 카드 === */
+    const patternCard = document.getElementById('patternCard');
+    const matchesEl   = document.getElementById('diseaseMatches');
+    if (r.matches.length > 0) {
+      patternCard.style.display = '';
+      const top = r.matches[0];
+      const confidence = top.similarity >= 75 ? '강함'
+                       : top.similarity >= 55 ? '보통' : '약함';
+
+      matchesEl.innerHTML = `
+        <div class="pattern-summary">
+          가장 가까운 패턴은 <strong>${top.disease}</strong>이며, 유사도 <strong>${top.similarity}%</strong> · 매칭 강도 <strong>${confidence}</strong>입니다.
+        </div>
+        ${r.matches.map((m, i) => `
+          <div class="disease-info" style="margin-bottom: 12px;">
+            <div class="disease-name-row">
+              <span class="disease-name">${m.disease}</span>
+              <span class="disease-rank ${i === 0 ? 'top' : ''}">${i === 0 ? 'TOP MATCH' : `#${i+1}`}</span>
+            </div>
+            <div class="disease-row">
+              <div class="disease-bar-track">
+                <div class="disease-bar-fill ${i === 0 ? 'top' : ''}" data-w="${m.similarity}"></div>
+              </div>
+              <div class="disease-percent">${m.similarity}%</div>
+            </div>
+          </div>
+        `).join('')}
+      `;
+    } else {
+      patternCard.style.display = 'none';
+    }
+
+    /* === 증상별 기여도 === */
+    const maxC = Math.max(...r.contributions.map(c => c.score), 1);
+    const bars = document.getElementById('bars');
+    if (r.contributions.length === 0) {
+      bars.innerHTML = `<p class="empty-bars">입력된 증상이 없습니다.</p>`;
+    } else {
+      bars.innerHTML = r.contributions.map(c => `
+        <div class="bar-row">
+          <div class="bar-name">${c.name}</div>
+          <div class="bar-track">
+            <div class="bar-fill" data-w="${(c.score / maxC * 100).toFixed(0)}" style="background:${r.grade.color}"></div>
+          </div>
+          <div class="bar-value">${c.score.toFixed(1)}</div>
+        </div>
+      `).join('');
+    }
+
+    /* === AI 안내 === */
+    document.getElementById('aiTipTitle').textContent = r.advice.title;
+    document.getElementById('aiTipBody').textContent  = r.advice.body;
+
+    document.getElementById('result').classList.add('show');
+    document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    // 막대 애니메이션
+    setTimeout(() => {
+      document.querySelectorAll('.bar-fill').forEach(b => {
+        b.style.width = b.dataset.w + '%';
+      });
+      document.querySelectorAll('.disease-bar-fill').forEach(b => {
+        b.style.width = b.dataset.w + '%';
+      });
+    }, 200);
+  }
+
+  function resetAll() {
+    state.symptoms = {};
+    state.duration = 1;
+    state.classmates = 0;
+    document.getElementById('durationVal').textContent = '1';
+    document.getElementById('classmatesVal').textContent = '0';
+    document.querySelectorAll('.symptom-card').forEach(c => c.classList.remove('has-value'));
+    document.querySelectorAll('.level-btn').forEach(b => {
+      b.classList.toggle('active', parseInt(b.dataset.level) === 0);
+    });
+    document.getElementById('result').classList.remove('show');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    buildSymptomCards();
+    setupSteppers();
+    document.getElementById('analyzeBtn').addEventListener('click', renderResult);
+    document.getElementById('resetBtn').addEventListener('click', resetAll);
+  });
+  </script>
+</body>
+</html>
